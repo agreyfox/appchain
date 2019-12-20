@@ -71,6 +71,7 @@ function sleep(milliseconds) {
 class SubChain {
 
   constructor(url, addr, scsaddr) {
+
     this.Chain3URL = url;
     this.chain3 = new Chain3();
     this.chain3.setProvider(
@@ -82,15 +83,19 @@ class SubChain {
       console.log("Chain3 RPC is not connected!");
       return;
     }
-
-
     this._addr = addr;
     this._scsaddr = scsaddr;  //scs 节点rpc 
-    this._VnodeBenificialAddr = "0xa66f32cf93ab13724ee732c2cbd679946be2f8f7";
-    this._mainaccount = "0x42ff541de733a175babb9a4f76efeaf78b46ecad";
-    this._password = "qweasdzxc";
-
+    this._VnodeBenificialAddr = "" || process.env.VNODEADDR;
+    this._mainaccount = "" || process.env.MAINACCOUNT;
+    this._password = "" || process.env.MAINPASSWORD;
     this._monitor = "";
+    console.log(this._VnodeBenificialAddr, this._mainaccount);
+    if (this._VnodeBenificialAddr == "" || this._VnodeBenificialAddr == undefined) {
+      console.warn("***You should assign the VnodeBenificial addr for some operation!");
+    }
+    if (this._mainaccount == "" || this._mainaccount == undefined) {
+      console.warn("***You should assign the MainAccount addr for some create operation!");
+    }
 
     var mcabi = this.ABIs.astABI;//load in the MicroChain ABI from external file
     // Create the appChainBase Object with abi
@@ -101,8 +106,6 @@ class SubChain {
       this.appChainBase.setVnodeAddress(this._VnodeBenificialAddr);
 
       this.appChainInstance = this.appChainBase.at(this._addr);  // this subchain instance
-
-
       this.mclist = this.chain3.scs.getMicroChainList();
       this.applist = this.chain3.scs.getDappAddrList(this._addr);
       this.dappBaseContractAddr = this.applist[0];
@@ -111,7 +114,6 @@ class SubChain {
       console.log("error in appchain, you show renew!");
       console.log(e);
     }
-
   }
 
   //返回是否链接
@@ -806,6 +808,8 @@ class SubChain {
       }
     }
   }
+
+  // automatic update the chain information in the class
   selfLoop() {
     let me = this;
     /* 
@@ -829,5 +833,5 @@ class SubChain {
 
 module.exports = SubChain;
 
-
-ac = new SubChain("http://127.0.0.1:8545", "0x624010ebdb9bfd16db98583a5048475582635c6a", "http://127.0.0.1:8548");
+//Now close the test instance
+// ac = new SubChain("http://127.0.0.1:8545", "0x624010ebdb9bfd16db98583a5048475582635c6a", "http://127.0.0.1:8548");
